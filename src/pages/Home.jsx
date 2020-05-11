@@ -7,6 +7,8 @@ const Home = () => {
     const [datos, setDatos] = useState([]);
     const [mensaje, setMensaje] = useState({});
 
+    const guardar_actualizar = React.createRef();
+
     useEffect(() => 
     {
         obtenerDatos();
@@ -19,8 +21,10 @@ const Home = () => {
         try 
         {
             let data = await db.collection("pruebas").add(mensaje);
-    
-            console.log(data);            
+            console.log(data);
+            
+            setMensaje({mensaje: '', motivo: ''});
+                     
         } 
         catch(error) 
         {
@@ -61,6 +65,25 @@ const Home = () => {
         });
     }
 
+    const handleDelete = async(id) => 
+    {
+
+        try 
+        {
+            await db.collection('pruebas').doc(id).delete();    
+        } 
+        catch(error) 
+        {
+            console.log(error);
+        }
+    
+    }
+
+    const handleUpdate = (id, mensaje, motivo) => 
+    {
+        console.log(`${id} - ${mensaje} - ${motivo} `);
+    }
+
     return (
         <div className="container">
             <h1>Prueba para cli</h1>
@@ -76,6 +99,8 @@ const Home = () => {
                             <th scope="col">ID</th>
                             <th scope="col">MENSAJE</th>
                             <th scope="col">MOTIVO</th>
+                            <th scope="col">BORRAR</th>
+                            <th scope="col">EDITAR</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -88,6 +113,8 @@ const Home = () => {
                                         <th scope="row">{a.id}</th>
                                         <td> {a.data.mensaje} </td>
                                         <td> {a.data.motivo} </td>
+                                        <td><button type="button" onClick={() => {handleDelete(a.id)}} className="btn btn-danger">Borrar</button></td>
+                                        <td><button type="button" onClick={() => {handleUpdate(a.id, a.data.mensaje, a.data.motivo)}} className="btn btn-warning">Editar</button></td>
                                     </tr>
                                 )
                             }):
